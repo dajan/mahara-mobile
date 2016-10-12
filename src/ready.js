@@ -2,7 +2,7 @@
   window.mahara = {i18n:{}};
   var deps = {
     json: ['i18n/strings.json'],
-    scripts: ['bundle.js', 'lib/ripple.js/ripple.js', 'lib/alertify.js/alertify.js']
+    scripts: ['bundle.js', 'lib/ripple.js/ripple.js', 'lib/alertify.js/alertify.js', 'lib/tinymce-4.4.3/tinymce.min.js']
   };
 
   function ready(){

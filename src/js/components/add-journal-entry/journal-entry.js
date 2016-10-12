@@ -2,6 +2,7 @@
 import React               from 'react';
 import MaharaBaseComponent from '../base.js';
 import Select2             from 'react-select2';
+import TinyMCE             from 'react-tinymce';
 import {maharaServer}      from '../../state.js';
 
 class JournalEntry extends MaharaBaseComponent {
@@ -32,7 +33,7 @@ class JournalEntry extends MaharaBaseComponent {
       <h2>Title</h2>
       <input ref="title" type="text" className="subject"/>
       <h2>Detail</h2>
-      <textarea ref="textarea" className="body"></textarea>
+      <TinyMCE ref="textarea" className="body" config={{}}></TinyMCE>
       <h2>Tags</h2>
       <Select2
         multiple
