@@ -12,7 +12,7 @@ class AddJournalEntry extends MaharaBaseComponent {
     return <section>
       <h1>{this.gettext("add_journal_title")}</h1>
       <JournalEntry parent={this} {...this.props} ref="journalEntry"/>
-      <button ref="saveButton" onClick={this.saveButton}>{this.gettext("add_journal_save_button")}</button>
+      <button className="add-journal-entry-save-button" ref="saveButton" onClick={this.saveButton}>{this.gettext("add_journal_save_button")}</button>
     </section>;
   }
   saveButton = () => {
@@ -25,7 +25,7 @@ class AddJournalEntry extends MaharaBaseComponent {
       type:      JOURNAL.TYPE,
       guid:      this.guidGenerator(),
       title:     titlebox.value,
-      body:      textarea.value,
+      body:      tinymce.EditorManager.get(textarea.id).getContent(),
       tags:      tags,
       createdOn: Date.now()
     };

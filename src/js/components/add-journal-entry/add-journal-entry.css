@@ -62,7 +62,7 @@ html.PAGE_EDIT_JOURNAL_ENTRY {
 		}
 	}
 
-	button {
+	button.add-journal-entry-save-button {
 		position:fixed;
 		right: 30px;
 		bottom: 30px;

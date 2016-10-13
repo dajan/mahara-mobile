@@ -1,77 +1,86 @@
 /*jshint esnext: true */
-import React               from 'react';
+import React from 'react';
 import MaharaBaseComponent from '../base.js';
-import Select2             from 'react-select2';
-import TinyMCE             from 'react-tinymce';
-import {maharaServer}      from '../../state.js';
+import Select2 from 'react-select2';
+import TinyMCE from 'react-tinymce';
+import { maharaServer } from '../../state.js';
 
 class JournalEntry extends MaharaBaseComponent {
-  constructor(props) {
-    super(props);
-    var tags = [],
-        i;
+    constructor(props) {
+        super(props);
+        var tags = [],
+            i;
 
-    if(maharaServer.sync && maharaServer.sync.tags){
-      for(i = 0; i < maharaServer.sync.tags.length; i++){
-        tags.push(maharaServer.sync.tags[i].id);
-      }
-    }
-
-    this.state = {
-      tags: tags
-    };
-    this.changeTags = this.changeTags.bind(this);
-  }
-  render() {
-    const inputProps = {
-       placeholder: 'Tags...',
-       value: this.state.tags,
-       onChange: this.changeTags
-    };
-
-    return <div>
-      <h2>Title</h2>
-      <input ref="title" type="text" className="subject"/>
-      <h2>Detail</h2>
-      <TinyMCE ref="textarea" className="body" config={{}}></TinyMCE>
-      <h2>Tags</h2>
-      <Select2
-        multiple
-        onChange={this.changeTags}
-        ref="reactSelect2"
-        data={this.state.tags}
-        options={
-          {
-            placeholder: this.gettext("tags_placeholder"),
-            width: '100%',
-            tags: true
-          }
+        if (maharaServer.sync && maharaServer.sync.tags) {
+            for (i = 0; i < maharaServer.sync.tags.length; i++) {
+                tags.push(maharaServer.sync.tags[i].id);
+            }
         }
-      />
-    </div>;
-  }
-  changeTags(event){
-    var tagsObj = this.refs.reactSelect2.el.select2('data'),
-        tags = [],
-        i;
 
-    for(i = 0; i < tagsObj.length; i++){
-      tags.push(tagsObj[i].text);
+        this.state = {
+            tags: tags
+        };
+        this.changeTags = this.changeTags.bind(this);
     }
+    render() {
+        const inputProps = {
+            placeholder: 'Tags...',
+            value: this.state.tags,
+            onChange: this.changeTags
+        };
 
-    //console.log("new tags", tags);
-    this.tags = tags; // parent component accesses it this way
-  }
-  componentDidMount(){
-    var textarea = this.refs.textarea,
-        saveButtonHeight = 50, //todo: approximate height most of the time
-        textareaLayout = textarea.getBoundingClientRect(),
-        newTextAreaHeight = window.innerHeight - textareaLayout.top - saveButtonHeight,
-        minimumHeight = 50; // 50 (pixels) is about 2 lines of text on most screens. Feel free to tweak this.
+        return <div>
+            <h2>Title</h2>
+            <input ref="title" type="text" className="subject" />
+            <h2>Detail</h2>
+            <TinyMCE
+                ref="textarea"
+                className="body"
+                config={
+                    {
+                        theme: "modern",
+                        menubar: "false",
+                        toolbar1: "formatselect | bold italic | bullist numlist | link unlink | undo redo"
+                    }
+                }></TinyMCE>
+            <h2>Tags</h2>
+            <Select2
+                multiple
+                onChange={this.changeTags}
+                ref="reactSelect2"
+                data={this.state.tags}
+                options={
+                    {
+                        placeholder: this.gettext("tags_placeholder"),
+                        width: '100%',
+                        tags: true
+                    }
+                }
+                />
+        </div>;
+    }
+    changeTags(event) {
+        var tagsObj = this.refs.reactSelect2.el.select2('data'),
+            tags = [],
+            i;
 
-    newTextAreaHeight = newTextAreaHeight < minimumHeight ? minimumHeight : newTextAreaHeight; //clamping the value to a minimum
-    textarea.style.height = newTextAreaHeight + "px";
-  }
+        for (i = 0; i < tagsObj.length; i++) {
+            tags.push(tagsObj[i].text);
+        }
+
+        //console.log("new tags", tags);
+        this.tags = tags; // parent component accesses it this way
+    }
+    // componentDidMount() {
+    //     var textarea = this.refs.textarea,
+    //         saveButtonHeight = 50, //todo: approximate height most of the time
+    //         textareaLayout = textarea.getBoundingClientRect(),
+    //         newTextAreaHeight = window.innerHeight - textareaLayout.top - saveButtonHeight,
+    //         minimumHeight = 50; // 50 (pixels) is about 2 lines of text on most screens. Feel free to tweak this.
+
+    //     newTextAreaHeight = newTextAreaHeight < minimumHeight ? minimumHeight : newTextAreaHeight; //clamping the value to a minimum
+    //     textarea.style.height = newTextAreaHeight + "px";
+    // }
 }
 
 export default JournalEntry;
