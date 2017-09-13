@@ -4,17 +4,24 @@
         "es6": true,
         "jquery": true
     },
-    "extends": ["plugin:import/errors", "plugin:react/recommended", "eslint:recommended"],
+    "extends": [
+      "standard",
+      "eslint:recommended",
+      "plugin:react/recommended",
+      "plugin:import/errors"
+    ],
     "parser": "babel-eslint",
     "parserOptions": {
-        "ecmaFeatures": {
-            "experimentalObjectRestSpread": true,
-            "jsx": true
-        },
-        "sourceType": "module"
+      "ecmaVersion": 2017,
+      "ecmaFeatures": {
+          "jsx": true
+      },
+      "sourceType": "module"
     },
     "plugins": [
-        "react"
+      "react",
+      "standard",
+      "promise"
     ],
     "rules": {
         "react/display-name": 0,

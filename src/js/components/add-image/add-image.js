@@ -26,7 +26,7 @@ class AddImage extends MaharaBaseComponent {
             for (var i = 0; i < this.props.pendingUploads.length; i++) {
                 if (this.props.pendingUploads[i].guid === this.props.imageToEdit) {
                     imageToEdit = this.props.pendingUploads[i];
-                    pageTitle = this.gettext("edit_image_title");
+                    pageTitle = this.gettext("edit_file_title");
                     break;
                 }
             }
