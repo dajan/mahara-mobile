@@ -1,7 +1,4 @@
-/*jshint esnext: true */
-
-import StateStore,
-       {maharaServer}                          from './state.js';
+import StateStore, {maharaServer}              from './state.js';
 import Router                                  from './router.js';
 import {getLangString}                         from './i18n.js';
 import {REATTEMPT_UPLOADS_AFTER_MILLISECONDS,
@@ -9,6 +6,7 @@ import {REATTEMPT_UPLOADS_AFTER_MILLISECONDS,
         JOURNAL,
         FILE_ENTRY,
         PAGE_URL}                              from './constants.js';
+import fs                                      from './mahara-lib/files-lib.js';
 
 var langCodes;
 
@@ -48,13 +46,17 @@ export default function uploadNextItem(state){
 
   langCodes = state.lang;
 
-  if(item.type === JOURNAL.TYPE){
-    uploadJournal(item);
-  } else if(item.type === FILE_ENTRY.TYPE){
-    uploadFile(item);
-  } else {
-    console.log("Unrecognised upload type", item);
-    StateStore.dispatch({type:PENDING.STOP_UPLOADS});
+  try {
+    if(item.type === JOURNAL.TYPE){
+      uploadJournal(item);
+    } else if(item.type === FILE_ENTRY.TYPE){
+      uploadFile(item);
+    } else {
+      console.log("Unrecognised upload type", item);
+      StateStore.dispatch({type:PENDING.STOP_UPLOADS});
+    }
+  } catch(e) {
+    afterUploadError({ item, message: e });
   }
 }
 
@@ -72,14 +74,24 @@ function uploadFile(fileEntry){
 function afterUploadComplete(response){
   var item = response.journalEntry || response.fileEntry;
   console.log("Uploaded item", item);
+
+  // remove from temp files
+  if (response.fileEntry) {
+    fs.fileExists(item.fileUrl, () => fs.removeFile(item.fileUrl));
+  }
+
   StateStore.dispatch({type:PENDING.UPLOAD_ITEM_FINISHED, guid:item.guid});
   StateStore.dispatch({type:PENDING.DELETE, guid:item.guid});
   StateStore.dispatch({type:PENDING.UPLOAD_NEXT});
 }
 
 function afterUploadError(response){
-  var item = response.journalEntry || response.fileEntry;
-  StateStore.dispatch({type:PENDING.UPLOAD_ITEM_FINISHED, guid:item.guid});
+  const item = response.journalEntry || response.fileEntry || response.item;
+
+  if (item) {
+    StateStore.dispatch({type:PENDING.UPLOAD_ITEM_FINISHED, guid:item.guid});
+  }
+
   StateStore.dispatch({type:PENDING.STOP_UPLOADS});
 //   if(response && response.error){
     // if(response.hasOwnProperty("isLoggedIn")){

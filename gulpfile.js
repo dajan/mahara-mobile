@@ -43,7 +43,7 @@ gulp.task('js', function () {
     .transform(
         babelify,
         {
-            presets: ["latest", "react"],
+            presets: ["env", "react"],
             plugins: ["transform-export-extensions", "transform-class-properties"]
         }
     )
