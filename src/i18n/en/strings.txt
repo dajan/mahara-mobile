@@ -90,3 +90,4 @@ default_language=Default language
 default_folder=Default folder
 default_settings=Default settings
 record_audio=Record Audio
+back_to_profile=Back to Profile

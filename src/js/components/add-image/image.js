@@ -1,20 +1,20 @@
 import React, { PropTypes } from 'react';
 import MaharaBaseComponent  from '../base.js';
-import Select2              from 'react-select2';
+import Select, { Creatable } from 'react-select';
+
+import { setTextareaHeight } from '../../util';
 
 class ImageDetails extends MaharaBaseComponent {
     constructor(props) {
         super(props);
-        var userTags = [];
 
-        for (var i = 0; i < props.server.sync.tags.length; i++) {
-            userTags.push(props.server.sync.tags[i].tag);
-        }
+        let userTags = props.server.sync.tags.map(tag => tag.tag);
 
         this.imageToEdit = props.imageToEdit;
 
         this.state = {
             userTags: userTags,
+            selectedTags: props.imageToEdit.guid ? this.imageToEdit.tags : [],
             targetFolderName: props.imageToEdit.guid ? this.imageToEdit.targetFolderName : this.props.server.defaultFolderName
         };
 
@@ -23,96 +23,58 @@ class ImageDetails extends MaharaBaseComponent {
         this.tags = this.props.imageToEdit.tags;
     }
     render() {
-        var title = this.props.imageToEdit.title;
-        var description = this.props.imageToEdit.description;
-        var tags = this.props.imageToEdit.tags;
-        var img = "";
-        if (this.props.imageToEdit.mimeType.indexOf('image/') === 0) {
-            img = <img src={this.props.imageToEdit.fileUrl} className="fileUploadPreview"/>;
-        }
+        const { title, description, mimeType, fileUrl } = this.props.imageToEdit;
 
-        let folderOptions = this.props.server.sync.folders.map(folder =>  {
-            return {
-              'id': folder.title,
-              'text': folder.title
-            };
-          });
+        const folderOptions = this.props.server.sync.folders
+          .map(folder => ({ label: folder.title, value: folder.title }));
 
-          // display journal selector only if there is more than one journal
-          let folderSelectNode = null;
-          if (this.props.server.sync.folders.length > 1) {
-              folderSelectNode =
-                  <div>
-                      <h2>{this.gettext('library_folder')}</h2>
-                      <Select2
-                            defaultValue={this.state.targetFolderName}
-                            onChange={this.changeFolder}
-                            ref="folderSelect"
-                            data={folderOptions}
-                            options={
-                                {
-                                    width: '100%',
-                                    minimumResultsForSearch: -1,
-                                }
-                            }
-                        />
-                    </div>;
-          }
-
+        const tagsOptions = this.state.userTags.concat(this.state.selectedTags)
+          .filter((tag, id, tags) => tags.indexOf(tag) === id) // make unique
+          .map(tag => ({ value: tag, label: tag }));
 
         return <div>
-            {img}
+            {mimeType.indexOf('image/') === 0 ?
+              <img src={fileUrl} className="fileUploadPreview"/> : null
+            }
             <h2>{this.gettext('library_title')}</h2>
             <input ref="title" type="text" className="subject" defaultValue={title} />
             <h2>{this.gettext('description')}</h2>
             <textarea ref="textarea" className="body" defaultValue={description} />
             <h2>{this.gettext('library_tags')}</h2>
-            <Select2
-                multiple
+              <Creatable
+                multi={true}
+                value={this.state.selectedTags}
                 onChange={this.changeTags}
-                ref="reactSelect2"
-                data={this.state.userTags.concat(tags)}
-                defaultValue={tags}
-                options={
-                    {
-                        placeholder: this.gettext("tags_placeholder"),
-                        width: '100%',
-                        tags: true
-                    }
-                }
-            />
-            {folderSelectNode}
+                clearable={false}
+                options={tagsOptions}
+              />
+            {this.props.server.sync.folders.length < 2 ? null :
+              <div>
+                <h2>{this.gettext('library_folder')}</h2>
+                  <Select
+                    value={this.state.targetFolderName}
+                    onChange={this.changeFolder}
+                    clearable={false}
+                    options={folderOptions}
+                  />
+              </div>
+            }
         </div>;
     }
-    changeTags(event) {
-        var tagsObj = this.refs.reactSelect2.el.select2('data'),
-            tags = [],
-            i;
-
-        for (i = 0; i < tagsObj.length; i++) {
-            tags.push(tagsObj[i].text);
-        }
-
-        //console.log("new tags", tags);
-        this.tags = tags; // parent component accesses it this way
+    changeTags(tagsObj) {
+      this.setState({ selectedTags: tagsObj.map(t => t.label) });
+      // parent component accesses it this way
+      this.tags = tagsObj.map(t => t.label);
     }
 
-    changeFolder() {
-        let targetFolderName = this.refs.folderSelect.el.select2('data')[0].id;
-        this.props.onChangeFolder(targetFolderName);
+    changeFolder(selectedFolder) {
+      this.setState({ targetFolderName: selectedFolder.value });
+      this.props.onChangeFolder(selectedFolder.value);
     }
 
     componentDidMount() {
-        var textarea = this.refs.textarea,
-            saveButtonHeight = 100, //todo: approximate height most of the time
-            textareaLayout = textarea.getBoundingClientRect(),
-            newTextAreaHeight = window.innerHeight - textareaLayout.top - saveButtonHeight,
-            minimumHeight = 50; // 50 (pixels) is about 2 lines of text on most screens. Feel free to tweak this.
-
-        newTextAreaHeight = newTextAreaHeight < minimumHeight ? minimumHeight : newTextAreaHeight; //clamping the value to a minimum
-        textarea.style.height = newTextAreaHeight + "px";
-    }
-}
+      setTextareaHeight(this.refs.textarea);
+    }}
 
 export default ImageDetails;
 

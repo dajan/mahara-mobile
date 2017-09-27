@@ -107,7 +107,10 @@ function afterUploadError(response){
     // } else if(response.hasOwnProperty("message")){
     //   alertify.alert(getLangString(langCodes, "server_response_prefix") + "\n" + response.message);
     // }
-    if (response.message) {
+
+    if (typeof response === "string") {
+      alertify.alert(response);
+    } else if (response.message) {
         alertify.alert("Problem uploading. Response was: " + response.message);
     }
     else {

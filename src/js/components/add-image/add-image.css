@@ -46,21 +46,6 @@ html.PAGE_ADD_IMAGE {
 		font-family: 'Open Sans', sans-serif;
 	}
 
-	.select2-container--default {
-		.select2-selection--multiple {
-			border-radius: 0;
-			border: 0;
-			padding: 7px;
-			font-size: 16px;
-		}
-	}
-	.select2-container--open {
-		.select2-dropdown--below {
-			border: 0;
-			font-size: 16px;
-		}
-	}
-
 	button {
 		position:fixed;
 		right: 30px;

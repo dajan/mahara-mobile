@@ -29,7 +29,7 @@ body,
 @import "./buttons.css";
 @import "./headings.css";
 @import "./forms.css";
-@import "./select2.css";
+@import "./react-select.css";
 @import "../js/components/server/server.css";
 @import "../js/components/login-type/login-type.css";
 @import "../js/components/login/login.css";
