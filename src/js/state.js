@@ -181,7 +181,15 @@ function MaharaState(state, action) {
             break;
         case STORAGE.SET_USER_LANGUAGE:
             // e.g. ["en-GB", 'en', 'en']
-            state.lang = [action.language, action.language.split('-')[0], STORAGE.DEFAULT_LANGUAGE];
+            if (action.language) {
+              if (action.language.indexOf('-') > -1) {
+                state.lang = [action.language, action.language.split('-')[0], STORAGE.DEFAULT_LANGUAGE];
+              } else {
+                state.lang = [action.language, STORAGE.DEFAULT_LANGUAGE];
+              }
+            } else {
+              state.lang = [STORAGE.DEFAULT_LANGUAGE];
+            }
             break;
         case STORAGE.SET_DEFAULT_JOURNAL:
             state.server.defaultBlogId = action.journal;

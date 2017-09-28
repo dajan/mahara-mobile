@@ -22,63 +22,51 @@ class SettingsTab extends MaharaBaseComponent {
     }
 
     render() {
-        var siteName = 'Mahara';
-        var icon;
-        var displayName;
+        let siteName = 'Mahara',
+          defaultFolder, defaultJournal, defaultLanguage;
 
-          let defaultFolder, defaultJournal, defaultLanguage;
-          // language select setup
-          let langOptions = Object.keys(window.mahara.i18n.strings).map(lang => {
-            return {
-              'id': lang,
-              'text': lang
-            };
-          }) || [];
-          if (this.props.lang.length && langOptions.length) {
-            this.props.lang.forEach(lang => {
-                if (!defaultLanguage) {
-                  defaultLanguage =  langOptions.find(language => language.id === lang);
-                }
-            });
-          }
+        const { server, lang } = this.props;
+        // language select setup
+        let langOptions = Object.keys(window.mahara.i18n.strings)
+          .map(lang => ({ id: lang, text: lang }));
 
-          if (!defaultLanguage) {
-            defaultLanguage = { 'id': '', 'title': ''};
-          }
+        if (lang.length && langOptions.length) {
+          lang.forEach(lang => {
+              if (!defaultLanguage) {
+                defaultLanguage =  langOptions.find(language => language.id === lang);
+              }
+          });
+        }
 
-          // lang = this.props.lang.find(language => langOptions.indexOf(language) > -1);
+        if (!defaultLanguage) {
+          defaultLanguage = {'id': '', 'title': ''};
+        }
 
-          // journal select setup
-          let journalOptions = this.props.server.sync.blogs.map(blog =>  {
-                    return {
-                      'id': blog.id,
-                      'text': blog.title
-                    };
-                  });
-          if (this.props.server.defaultBlogId && journalOptions.length) {
-            defaultJournal = journalOptions.find(blog => blog.id === this.props.server.defaultBlogId);
-          } else {
-            defaultJournal = { 'id': '', 'title': ''};
-          }
+        // journal select setup
+        let journalOptions = server.sync.blogs
+          .map(blog => ({ id: blog.id, text: blog.title }));
+
+        if (server.defaultBlogId && journalOptions.length) {
+          defaultJournal = journalOptions.find(blog => blog.id === server.defaultBlogId);
+        } else {
+          defaultJournal = { 'id': '', 'title': '' };
+        }
 
           // folder select setup
-          let folderOptions = this.props.server.sync.folders.map(folder =>  {
-                    return {
-                      'id': folder.title,
-                      'text': folder.title
-                    };
-                  });
-          if (this.props.server.defaultFolderName && folderOptions.length) {
-            defaultFolder = folderOptions.find(folder => folder.id === this.props.server.defaultFolderName);
+          let folderOptions = server.sync.folders
+            .map(folder => ({ id: folder.title, text: folder.title }));
+
+          if (server.defaultFolderName && folderOptions.length) {
+            defaultFolder = folderOptions.find(folder => folder.id === server.defaultFolderName);
           } else {
-            defaultFolder = { 'id': '', 'title': ''};
+            defaultFolder = { 'id': '', 'title': '' };
           }
 
           return <section>
                     <h2>{siteName}</h2>
                     <div className="userInfoBlock">
                       <div className="back">
-                        <a onClick={this.props.onGoBack}>Back to Profile</a>
+                        <a onClick={this.props.onGoBack}>{this.gettext("back_to_profile")}</a>
                       </div>
                       {this.renderServer() }
                       <MaharaSelector
@@ -117,9 +105,8 @@ class SettingsTab extends MaharaBaseComponent {
     }
 
     setFolder(folder) {
-      StateStore.dispatch({ type: STORAGE.SET_DEFAULT_FOLDER, folder: folder});
+      StateStore.dispatch({ type: STORAGE.SET_DEFAULT_FOLDER, folder: folder });
     }
-
 
     renderServer() {
         if (!this.props.server || !this.props.server.wwwroot) return "";

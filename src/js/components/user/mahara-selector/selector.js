@@ -4,7 +4,8 @@ import StateStore,
        {maharaServer}      from '../../../state.js';
 import {STORAGE, PAGE_URL} from '../../../constants.js';
 import Router              from '../../../router.js';
-import Select2             from 'react-select2';
+import Select from 'react-select';
+
 
 export default class MaharaSelector extends MaharaBaseComponent {
 
@@ -13,7 +14,7 @@ export default class MaharaSelector extends MaharaBaseComponent {
 
     this.state = {
       isEditable: false,
-      selection: null
+      selection: this.props.defaultOption ? this.props.defaultOption.id : null
     };
 
     this.setSelection = this.setSelection.bind(this);
@@ -25,19 +26,14 @@ export default class MaharaSelector extends MaharaBaseComponent {
       if (this.state.isEditable) {
           return <div className="setting">
                   <div>
-                    <label htmlFor="default-journal">{this.props.label}:</label>
-                    <Select2
-                      defaultValue={this.props.defaultOption.id}
-                      onChange={this.selectionChanged}
-                      ref={this.props.name}
-                      data={this.props.options}
-                      options={
-                        {
-                          width: '80%',
-                          "marginRight": "5px",
-                          minimumResultsForSearch: -1,
-                        }
-                      }
+                    <label htmlFor={this.props.name}>{this.props.label}:</label>
+                      <Select
+                        value={this.state.selection}
+                        onChange={this.selectionChanged}
+                        labelKey="text"
+                        valueKey="id"
+                        clearable={false}
+                        options={this.props.options}
                       />
                   </div>
                 <button onClick={this.setSelection} className="btn save"></button>
@@ -53,12 +49,18 @@ export default class MaharaSelector extends MaharaBaseComponent {
       }
   }
 
-  selectionChanged() {
-      this.setState({ 'selection': this.refs[this.props.name].el.select2('data')[0].id });
+  selectionChanged(selection) {
+    this.setState({ 'selection': selection.id });
   }
 
   setSelection() {
-    this.props.onSetSelection(this.state.selection);
+    if (!this.state.selection &&
+        (!this.props.defaultOption || !this.props.defaultOption.id) &&
+        this.props.options.length) {
+      this.props.onSetSelection(this.props.options[0].id);
+    } else {
+      this.props.onSetSelection(this.state.selection);
+    }
     this.setState({ isEditable: false });
   }
 
