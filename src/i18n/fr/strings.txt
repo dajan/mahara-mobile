@@ -7,6 +7,7 @@ add_journal_title=Ajouter un article de journal
 add_new=Ajouter
 alert_ok_button=Ok
 app_name=Mahara Mobile
+back_to_profile=Retour au profil
 button_cancel=Annuler
 camera_error=Problème lors de la prise d'une photo.
 camera_take_photo_button=Prendre une photo
